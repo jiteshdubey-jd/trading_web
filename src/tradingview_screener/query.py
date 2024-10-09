@@ -45,9 +45,7 @@ HEADERS = {
 def _impl_and_or_chaining(
     expressions: tuple[FilterOperationDict | OperationDict, ...], operator: Literal['and', 'or']
 ) -> OperationDict:
-    # we want to wrap all the `FilterOperationDict` expressions with `{'expression': expr}`,
-    # to know if it's an instance of `FilterOperationDict` we simply check if it has the `left` key,
-    # which no other TypedDict has.
+   
     lst = []
     for expr in expressions:
         if 'left' in expr:  # if isinstance(expr, FilterOperationDict): ...
@@ -81,14 +79,6 @@ class Query:
               ticker  name   close     volume  market_cap_basic
      0      AMEX:SPY   SPY  410.68  107367671               NaN
      1    NASDAQ:QQQ   QQQ  345.31   63475390               NaN
-     2   NASDAQ:TSLA  TSLA  207.30   94879471      6.589904e+11
-     3   NASDAQ:NVDA  NVDA  405.00   41677185      1.000350e+12
-     4   NASDAQ:AMZN  AMZN  127.74  125309313      1.310658e+12
-     ..          ...   ...     ...        ...               ...
-     45     NYSE:UNH   UNH  524.66    2585616      4.859952e+11
-     46  NASDAQ:DXCM  DXCM   89.29   14954605      3.449933e+10
-     47      NYSE:MA    MA  364.08    3624883      3.429080e+11
-     48    NYSE:ABBV  ABBV  138.93    9427212      2.452179e+11
      49     AMEX:XLK   XLK  161.12    8115780               NaN
      [50 rows x 5 columns])
 
@@ -106,15 +96,6 @@ class Query:
     (18060,
               ticker    open     high  ...  MACD.macd        RSI  price_earnings_ttm
      0      AMEX:SPY  414.19  414.600  ...  -5.397135  29.113396                 NaN
-     1    NASDAQ:QQQ  346.43  348.840  ...  -4.321482  34.335449                 NaN
-     2   NASDAQ:TSLA  210.60  212.410  ... -12.224250  28.777229           66.752536
-     3   NASDAQ:NVDA  411.30  412.060  ...  -8.738986  37.845668           97.835540
-     4   NASDAQ:AMZN  126.20  130.020  ...  -2.025378  48.665666           66.697995
-     ..          ...     ...      ...  ...        ...        ...                 ...
-     45     NYSE:UNH  525.99  527.740  ...   6.448129  54.614775           22.770713
-     46  NASDAQ:DXCM   92.73   92.988  ...  -2.376942  52.908093           98.914368
-     47      NYSE:MA  366.49  368.285  ...  -7.496065  22.614078           31.711800
-     48    NYSE:ABBV  138.77  143.000  ...  -1.708497  27.117232           37.960054
      49     AMEX:XLK  161.17  162.750  ...  -1.520828  36.868658                 NaN
      [50 rows x 8 columns])
 
@@ -243,7 +224,7 @@ class Query:
     def __init__(self) -> None:
         # noinspection PyTypeChecker
         self.query: QueryDict = {
-            'markets': ['america'],
+            'markets': ['india'],
             'symbols': {'query': {'types': []}, 'tickers': []},
             'options': {'lang': 'en'},
             'columns': ['name', 'close', 'volume', 'market_cap_basic'],
@@ -251,7 +232,7 @@ class Query:
             'sort': {'sortBy': 'Value.Traded', 'sortOrder': 'desc'},
             'range': DEFAULT_RANGE.copy(),
         }
-        self.url = 'https://scanner.tradingview.com/america/scan'
+        self.url = 'https://scanner.tradingview.com/india/scan'
 
     def select(self, *columns: Column | str) -> Self:
         self.query['columns'] = [
@@ -335,7 +316,7 @@ class Query:
 
         Examples:
 
-        By default, the screener will show results from the `america` market, but you can
+        By default, the screener will show results from the `india` market, but you can
         change it (note the difference between `market` and `country`)
         >>> columns = ['close', 'market', 'country', 'currency']
         >>> (Query()
@@ -360,21 +341,21 @@ class Query:
         You can also select multiple markets
         >>> (Query()
         ...  .select(*columns)
-        ...  .set_markets('america', 'israel', 'hongkong', 'switzerland')
+        ...  .set_markets('india', 'israel', 'hongkong', 'switzerland')
         ...  .get_scanner_data())
         (23964,
                    ticker      close    market        country currency
-         0       AMEX:SPY   420.1617   america  United States      USD
-         1    NASDAQ:TSLA   201.2000   america  United States      USD
-         2    NASDAQ:NVDA   416.7825   america  United States      USD
-         3     NASDAQ:AMD   106.6600   america  United States      USD
-         4     NASDAQ:QQQ   353.7985   america  United States      USD
+         0       AMEX:SPY   420.1617   india  United States      USD
+         1    NASDAQ:TSLA   201.2000   india  United States      USD
+         2    NASDAQ:NVDA   416.7825   india  United States      USD
+         3     NASDAQ:AMD   106.6600   india  United States      USD
+         4     NASDAQ:QQQ   353.7985   india  United States      USD
          ..           ...        ...       ...            ...      ...
-         45  NASDAQ:GOOGL   124.9200   america  United States      USD
+         45  NASDAQ:GOOGL   124.9200   india  United States      USD
          46     HKEX:1211   233.2000  hongkong          China      HKD
          47     TASE:ALHE  1995.0000    israel         Israel      ILA
-         48      AMEX:BIL    91.4398   america  United States      USD
-         49   NASDAQ:GOOG   126.1500   america  United States      USD
+         48      AMEX:BIL    91.4398   india  United States      USD
+         49   NASDAQ:GOOG   126.1500   india  United States      USD
          [50 rows x 5 columns])
 
         You may also select different financial instruments
@@ -420,11 +401,11 @@ class Query:
         >>> q.set_tickers('NASDAQ:TSLA').get_scanner_data()
         (1,
                  ticker  name   market  close   volume    VWAP  MACD.macd
-         0  NASDAQ:TSLA  TSLA  america    186  3519931  185.53   2.371601)
+         0  NASDAQ:TSLA  TSLA  india    186  3519931  185.53   2.371601)
 
         To set tickers from multiple markets we need to update the markets that include them:
         >>> (Query()
-        ...  .set_markets('america', 'italy', 'vietnam')
+        ...  .set_markets('india', 'italy', 'vietnam')
         ...  .set_tickers('NYSE:GME', 'AMEX:SPY', 'MIL:RACE', 'HOSE:VIX')
         ...  .get_scanner_data())
         (4,
