@@ -1,4 +1,4 @@
- from tradingview_screener.query import Query
+from tradingview_screener.query import Query
 
 
 def main():
